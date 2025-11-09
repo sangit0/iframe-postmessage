@@ -2,23 +2,23 @@ import {
     HANDSHAKE_INTERVAL_MS,
     MAX_HANDSHAKE_ATTEMPTS,
     MESSAGE_TYPE,
-} from './constants';
-import { log } from './logger';
+} from '@/constants';
+import { log } from '@/logger';
 import {
     activeInstances,
     getInstanceInfo,
     registerInstance,
     unregisterInstance,
-} from './registry';
+} from '@/registry';
 import {
     BridgeMessage,
     IframePostmessageConfig,
-} from './types';
+} from '@/types';
 import {
     generateMessageId,
     resolveOrigin,
     sanitizeMessage,
-} from './utils';
+} from '@/utils';
 
 class ParentAPIImplementation {
     private parent: Window;

@@ -1,10 +1,10 @@
-import { BridgeModel, ChildAPIImplementation } from './child';
-import { BridgeParent, ParentAPIImplementation } from './parent';
+import { BridgeModel, ChildAPIImplementation } from '@/child';
+import { BridgeParent, ParentAPIImplementation } from '@/parent';
 import type {
     ChildAPI,
     IframePostmessageConfig,
     ParentAPI,
-} from './types';
+} from '@/types';
 
 const IframePostmessageImplementation = function IframePostmessage(config: IframePostmessageConfig) {
     return new BridgeParent(config);

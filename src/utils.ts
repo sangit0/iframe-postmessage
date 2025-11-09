@@ -1,5 +1,5 @@
-import { MESSAGE_TYPE } from './constants';
-import { BridgeMessageType } from './types';
+import { MESSAGE_TYPE } from '@/constants';
+import { BridgeMessageType } from '@/types';
 
 function resolveOrigin(url: string): string {
     const a = document.createElement('a');

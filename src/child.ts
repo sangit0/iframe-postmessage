@@ -2,21 +2,21 @@ import {
     HANDSHAKE_TIMEOUT_MS,
     MESSAGE_QUEUE_REPLAY_DELAY_MS,
     MESSAGE_TYPE,
-} from './constants';
-import { log } from './logger';
+} from '@/constants';
+import { log } from '@/logger';
 import {
     registerInstance,
     unregisterInstance,
     activeInstances,
-} from './registry';
+} from '@/registry';
 import {
     BridgeMessage,
     QueuedMessage,
-} from './types';
+} from '@/types';
 import {
     resolveValue,
     sanitizeMessage,
-} from './utils';
+} from '@/utils';
 
 class ChildAPIImplementation {
     private model: Record<string, unknown>;
@@ -88,7 +88,11 @@ class ChildAPIImplementation {
     }
 }
 
-const activeBridgeModels = new WeakSet<Window>();
+const activeBridgeModels = new Set<Window>();
+
+function clearActiveBridgeModels(): void {
+    activeBridgeModels.clear();
+}
 
 class BridgeModel {
     private child: Window;
@@ -296,4 +300,4 @@ class BridgeModel {
     }
 }
 
-export { ChildAPIImplementation, BridgeModel };
+export { ChildAPIImplementation, BridgeModel, clearActiveBridgeModels };

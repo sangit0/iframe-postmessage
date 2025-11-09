@@ -22,22 +22,6 @@ function unregisterInstance(childWindow: Window): void {
     }
 }
 
-function cleanupOrphanedInstances(): void {
-    activeInstances.forEach((info, childWindow) => {
-        try {
-            if (info.frame && !info.frame.isConnected) {
-                unregisterInstance(childWindow);
-            }
-        } catch {
-            unregisterInstance(childWindow);
-        }
-    });
-}
-
-if (typeof window !== 'undefined' && typeof setInterval !== 'undefined') {
-    setInterval(cleanupOrphanedInstances, 30000);
-}
-
 function getInstanceInfo(e: MessageEvent): BridgeInstanceInfo | undefined {
     if (!e.source) {
         return undefined;
@@ -49,7 +33,6 @@ export {
     activeInstances,
     registerInstance,
     unregisterInstance,
-    cleanupOrphanedInstances,
     getInstanceInfo,
 };
 

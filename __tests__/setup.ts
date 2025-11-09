@@ -6,18 +6,18 @@
 // Mock window.postMessage for testing
 global.postMessage = jest.fn();
 
-// Mock MessageEvent
-global.MessageEvent = class MessageEvent {
+// Mock MessageEvent that extends Event for jsdom compatibility
+global.MessageEvent = class MessageEvent extends Event {
+    data: unknown;
+    origin: string;
+    source: unknown;
+
     constructor(type: string, options: { data?: unknown; origin?: string; source?: unknown }) {
-        this.type = type;
+        super(type, { bubbles: true, cancelable: false });
         this.data = options.data;
         this.origin = options.origin || '';
         this.source = options.source || null;
     }
-    type: string;
-    data: unknown;
-    origin: string;
-    source: unknown;
 } as unknown as typeof MessageEvent;
 
 
