@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iframe-postmessage - Parent Example</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .demo-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .demo-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        input {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 200px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-left: 3px solid #667eea;
+            padding-left: 10px;
+        }
+
+        .log-entry.success {
+            border-left-color: #4caf50;
+        }
+
+        .log-entry.error {
+            border-left-color: #f44336;
+        }
+
+        .log-entry.info {
+            border-left-color: #2196f3;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .status.connected {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status.disconnected {
+            background: #f44336;
+            color: white;
+        }
+
+        .status.connecting {
+            background: #ff9800;
+            color: white;
+        }
+
+        #iframe-container {
+            width: 100%;
+            height: 400px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 iframe-postmessage - Parent Example</h1>
+        <p class="subtitle">This example demonstrates how to use the library from the parent frame</p>
+
+        <div class="demo-section">
+            <div id="status" class="status disconnected">Disconnected</div>
+            <h2>Connection Status</h2>
+            <p>Wait for the handshake to complete before using the buttons below.</p>
+        </div>
+
+        <div class="demo-section">
+            <h2>1. Get Value from Child</h2>
+            <p>Retrieve a property value from the child iframe.</p>
+            <div class="button-group">
+                <button onclick="getChildValue('appName')">Get App Name</button>
+                <button onclick="getChildValue('version')">Get Version</button>
+                <button onclick="getChildValue('userCount')">Get User Count</button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>2. Call Child Method</h2>
+            <p>Call methods exposed by the child iframe.</p>
+            <div class="button-group">
+                <button onclick="callChildMethod('greet', { name: 'Parent User' })">Greet</button>
+                <button onclick="callChildMethod('calculate', { a: 10, b: 20 })">Calculate (10 + 20)</button>
+                <button onclick="callChildMethod('updateTheme', { theme: 'dark' })">Update Theme</button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>3. Send Custom Data</h2>
+            <p>Send custom data to child methods.</p>
+            <div class="button-group">
+                <input type="text" id="customInput" placeholder="Enter message..." value="Hello from parent!">
+                <button onclick="sendCustomMessage()">Send Message</button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>4. Event Log</h2>
+            <p>Events received from the child iframe will appear here.</p>
+            <div id="log" class="log">
+                <div class="log-entry info">Waiting for connection...</div>
+            </div>
+            <button onclick="clearLog()" style="margin-top: 10px;">Clear Log</button>
+        </div>
+
+        <div id="iframe-container"></div>
+    </div>
+
+    <!-- Load the library from dist -->
+    <script type="module">
+        import IframePostmessage from '../dist/index.js';
+
+        let bridge = null;
+        const statusEl = document.getElementById('status');
+        const logEl = document.getElementById('log');
+
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function updateStatus(status, text) {
+            statusEl.className = `status ${status}`;
+            statusEl.textContent = text;
+        }
+
+        // Make functions available globally
+        window.getChildValue = async (property) => {
+            if (!bridge) {
+                log('❌ Not connected yet!', 'error');
+                return;
+            }
+            try {
+                log(`📤 Getting property: ${property}`, 'info');
+                const value = await bridge.get(property);
+                log(`✅ Received value: ${JSON.stringify(value)}`, 'success');
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        };
+
+        window.callChildMethod = (method, data) => {
+            if (!bridge) {
+                log('❌ Not connected yet!', 'error');
+                return;
+            }
+            log(`📤 Calling method: ${method} with data: ${JSON.stringify(data)}`, 'info');
+            bridge.call(method, data);
+        };
+
+        window.sendCustomMessage = () => {
+            const input = document.getElementById('customInput');
+            const message = input.value;
+            if (!bridge) {
+                log('❌ Not connected yet!', 'error');
+                return;
+            }
+            log(`📤 Sending custom message: ${message}`, 'info');
+            bridge.call('handleMessage', { message });
+        };
+
+        window.clearLog = () => {
+            logEl.innerHTML = '';
+        };
+
+        // Initialize the bridge
+        updateStatus('connecting', 'Connecting...');
+        log('🔄 Initializing iframe connection...', 'info');
+
+        // Share data with child (functions cannot be sent via postMessage)
+        // Note: Functions in model will cause DataCloneError
+        // To share methods, use bridge.call() from child instead
+        const bridgePromise = new IframePostmessage({
+            url: './child.html',
+            container: document.getElementById('iframe-container'),
+            classListArray: ['demo-iframe'],
+            model: {
+                // Only plain data can be shared via model
+                parentUrl: window.location.href,
+                parentTitle: document.title,
+                timestamp: Date.now()
+            }
+        });
+
+        bridgePromise
+            .then((childBridge) => {
+                bridge = childBridge;
+                updateStatus('connected', '✅ Connected');
+                log('✅ Handshake complete! You can now interact with the child.', 'success');
+
+                // Listen to events from child
+                bridge.on('childReady', (data) => {
+                    log(`🎉 Child is ready: ${JSON.stringify(data)}`, 'success');
+                });
+
+                bridge.on('dataUpdated', (data) => {
+                    log(`📊 Data updated: ${JSON.stringify(data)}`, 'info');
+                });
+
+                bridge.on('userAction', (data) => {
+                    log(`👤 User action: ${JSON.stringify(data)}`, 'info');
+                });
+
+                bridge.on('error', (data) => {
+                    log(`⚠️ Error from child: ${JSON.stringify(data)}`, 'error');
+                });
+            })
+            .catch((error) => {
+                updateStatus('disconnected', '❌ Connection Failed');
+                log(`❌ Failed to connect: ${error.message}`, 'error');
+            });
+    </script>
+</body>
+</html>
+

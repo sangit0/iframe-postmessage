@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iframe-postmessage - Child Example</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .demo-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .demo-section h2 {
+            color: #f5576c;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #f5576c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #e0485c;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        input {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 200px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+
+        .log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-left: 3px solid #f5576c;
+            padding-left: 10px;
+        }
+
+        .log-entry.success {
+            border-left-color: #4caf50;
+        }
+
+        .log-entry.error {
+            border-left-color: #f44336;
+        }
+
+        .log-entry.info {
+            border-left-color: #2196f3;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .status.connected {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status.disconnected {
+            background: #f44336;
+            color: white;
+        }
+
+        .status.connecting {
+            background: #ff9800;
+            color: white;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 2px solid #f5576c;
+        }
+
+        .info-card label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-card value {
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 iframe-postmessage - Child Example</h1>
+        <p class="subtitle">This example demonstrates how to use the library from the child iframe</p>
+
+        <div class="demo-section">
+            <div id="status" class="status disconnected">Disconnected</div>
+            <h2>Connection Status</h2>
+            <p>This iframe is waiting for handshake from parent...</p>
+        </div>
+
+        <div class="demo-section">
+            <h2>Exposed Properties & Methods</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <label>App Name</label>
+                    <value id="appName">My App</value>
+                </div>
+                <div class="info-card">
+                    <label>Version</label>
+                    <value id="version">1.0.0</value>
+                </div>
+                <div class="info-card">
+                    <label>User Count</label>
+                    <value id="userCount">0</value>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>Emit Events to Parent</h2>
+            <p>Send events to the parent frame.</p>
+            <div class="button-group">
+                <button onclick="emitEvent('childReady', { message: 'Child is ready!' })">Emit Ready</button>
+                <button onclick="emitEvent('dataUpdated', { count: Math.floor(Math.random() * 100) })">Emit Data Update</button>
+                <button onclick="emitEvent('userAction', { action: 'button_clicked', timestamp: Date.now() })">Emit User Action</button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>Send Custom Event</h2>
+            <p>Send a custom event with your own data.</p>
+            <div class="button-group">
+                <input type="text" id="eventInput" placeholder="Enter event data..." value="Custom event data">
+                <button onclick="sendCustomEvent()">Send Event</button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>Event Log</h2>
+            <p>Method calls and events from parent will appear here.</p>
+            <div id="log" class="log">
+                <div class="log-entry info">Waiting for connection...</div>
+            </div>
+            <button onclick="clearLog()" style="margin-top: 10px;">Clear Log</button>
+        </div>
+    </div>
+
+    <!-- Load the library from dist -->
+    <script type="module">
+        import { IframePostmessage } from '../dist/index.js';
+
+        let bridge = null;
+        const statusEl = document.getElementById('status');
+        const logEl = document.getElementById('log');
+
+        // State that parent can access
+        let userCount = 0;
+
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function updateStatus(status, text) {
+            statusEl.className = `status ${status}`;
+            statusEl.textContent = text;
+        }
+
+        // Make functions available globally
+        window.emitEvent = (eventName, data) => {
+            if (!bridge) {
+                log('❌ Not connected yet!', 'error');
+                return;
+            }
+            log(`📤 Emitting event: ${eventName} with data: ${JSON.stringify(data)}`, 'info');
+            bridge.emit(eventName, data);
+        };
+
+        window.sendCustomEvent = () => {
+            const input = document.getElementById('eventInput');
+            const data = input.value;
+            if (!bridge) {
+                log('❌ Not connected yet!', 'error');
+                return;
+            }
+            log(`📤 Sending custom event: ${data}`, 'info');
+            bridge.emit('customEvent', { message: data, timestamp: Date.now() });
+        };
+
+        window.clearLog = () => {
+            logEl.innerHTML = '';
+        };
+
+        // Initialize the bridge with exposed model
+        updateStatus('connecting', 'Connecting...');
+        log('🔄 Initializing child bridge...', 'info');
+
+        const bridgePromise = new IframePostmessage.Model({
+            // Exposed properties
+            appName: 'iframe-postmessage Demo',
+            version: '1.0.0',
+            get userCount() {
+                return userCount;
+            },
+
+            // Exposed methods
+            greet: (data) => {
+                log(`👋 Parent called greet with: ${JSON.stringify(data)}`, 'success');
+                return `Hello, ${data.name || 'Guest'}!`;
+            },
+
+            calculate: (data) => {
+                const { a, b } = data;
+                const result = a + b;
+                log(`🧮 Parent called calculate: ${a} + ${b} = ${result}`, 'success');
+                return result;
+            },
+
+            updateTheme: (data) => {
+                log(`🎨 Parent called updateTheme: ${JSON.stringify(data)}`, 'success');
+                document.body.style.filter = data.theme === 'dark' ? 'invert(1)' : 'none';
+                return { success: true, theme: data.theme };
+            },
+
+            handleMessage: (data) => {
+                log(`📨 Parent sent message: ${JSON.stringify(data)}`, 'info');
+                userCount++;
+                document.getElementById('userCount').textContent = userCount;
+                bridge.emit('dataUpdated', { userCount });
+                return { received: true, timestamp: Date.now() };
+            },
+
+            // Method that calls parent method
+            callParentMethod: async () => {
+                log('📞 Calling parent method getParentInfo...', 'info');
+                // Note: In real usage, you'd need to access parent methods differently
+                // This is just for demonstration
+            }
+        });
+
+        bridgePromise
+            .then((childBridge) => {
+                bridge = childBridge;
+                updateStatus('connected', '✅ Connected');
+                log('✅ Handshake complete! Parent can now call methods and get properties.', 'success');
+
+                // Emit ready event
+                setTimeout(() => {
+                    bridge.emit('childReady', {
+                        message: 'Child iframe is ready!',
+                        timestamp: Date.now(),
+                        appName: 'iframe-postmessage Demo'
+                    });
+                }, 500);
+            })
+            .catch((error) => {
+                updateStatus('disconnected', '❌ Connection Failed');
+                log(`❌ Failed to connect: ${error.message}`, 'error');
+            });
+    </script>
+</body>
+</html>
+

@@ -10,6 +10,8 @@
 
 **iframe-postmessage** is a production-ready library that simplifies secure communication between parent pages and iframe content. Built with TypeScript, zero dependencies, and designed for concurrent multi-iframe scenarios.
 
+![Example Demo](./examples/screenshot/screenshot1.png)
+
 ## ✨ Features
 
 - 🔒 **Secure by Default** - Origin validation and source checking prevent cross-iframe message interference
@@ -219,6 +221,47 @@ const bridge = await new IframePostmessage({
 // Child can call these methods
 // (methods are automatically available in child's model)
 ```
+
+## 📚 Live Examples
+
+Check out the interactive examples in the `examples/` directory:
+
+![Parent Example](./examples/screenshot/screenshot2.png)
+
+1. **Build the library**:
+   ```bash
+   npm run build
+   ```
+
+2. **Start a local server**:
+   ```bash
+   # Recommended: Use the included server (handles ES modules correctly)
+   node examples/server.js
+
+   # Or using Python 3
+   python3 -m http.server 8000
+   
+   # Or using Node.js
+   npx http-server -p 8000
+   ```
+
+3. **Open the parent example**:
+   ```
+   http://localhost:8000/examples/parent.html
+   ```
+
+![Child Example](./examples/screenshot/screenshot3.png)
+
+The examples demonstrate:
+- ✅ Creating iframe connections
+- ✅ Getting values from child
+- ✅ Calling child methods
+- ✅ Listening to events
+- ✅ Sharing data between parent and child
+
+![Interactive Demo](./examples/screenshot/screenshot4.png)
+
+See [`examples/README.md`](./examples/README.md) for more details.
 
 ## 🛡️ Security
 
