@@ -45,7 +45,7 @@ pnpm add iframe-postmessage
 import IframePostmessage from 'iframe-postmessage';
 
 // Create a new iframe connection
-const bridge = await new IframePostmessage({
+const connection = await new IframePostmessage({
   url: 'https://example.com/child-page.html',
   container: document.getElementById('iframe-container'),
   classListArray: ['custom-iframe'],
@@ -58,19 +58,19 @@ const bridge = await new IframePostmessage({
 });
 
 // Get a value from child
-const value = await bridge.get('someProperty');
+const value = await connection.get('someProperty');
 console.log('Value from child:', value);
 
 // Call a method on child
-bridge.call('someMethod', { data: 'example' });
+connection.call('someMethod', { data: 'example' });
 
 // Listen to events from child
-bridge.on('someEvent', (data) => {
+connection.on('someEvent', (data) => {
   console.log('Event from child:', data);
 });
 
 // Clean up when done
-// bridge.destroy();
+// connection.destroy();
 ```
 
 ### Child Frame (Iframe Content)
@@ -79,7 +79,7 @@ bridge.on('someEvent', (data) => {
 import { IframePostmessage } from 'iframe-postmessage';
 
 // Create child model
-const bridge = await new IframePostmessage.Model({
+const connection = await new IframePostmessage.Model({
   // Expose methods/properties to parent
   someProperty: 'value',
   someMethod: (data: unknown) => {
@@ -89,7 +89,7 @@ const bridge = await new IframePostmessage.Model({
 });
 
 // Emit events to parent
-bridge.emit('someEvent', { data: 'example' });
+connection.emit('someEvent', { data: 'example' });
 ```
 
 ## 📚 API Reference
@@ -162,7 +162,7 @@ child3.call('method3');
 
 ```typescript
 try {
-  const bridge = await new IframePostmessage({
+  const connection = await new IframePostmessage({
     url: 'https://example.com/child.html',
   });
   console.log('✅ Connected to child');
@@ -176,36 +176,36 @@ try {
 
 ```typescript
 // Modern async/await syntax
-const bridge = await new IframePostmessage({
+const connection = await new IframePostmessage({
   url: 'https://example.com/child.html',
 });
 
-const value = await bridge.get('property');
-bridge.call('method', { data: 'value' });
+const value = await connection.get('property');
+connection.call('method', { data: 'value' });
 ```
 
 ### 📡 Event-Driven Communication
 
 ```typescript
 // Parent
-bridge.on('childReady', (data) => {
+connection.on('childReady', (data) => {
   console.log('Child is ready!', data);
 });
 
-bridge.on('dataUpdate', (data) => {
+connection.on('dataUpdate', (data) => {
   updateUI(data);
 });
 
 // Child
-bridge.emit('childReady', { timestamp: Date.now() });
-bridge.emit('dataUpdate', { count: 42 });
+connection.emit('childReady', { timestamp: Date.now() });
+connection.emit('dataUpdate', { count: 42 });
 ```
 
 ### 🔐 Sharing Methods and Data
 
 ```typescript
 // Parent shares methods with child
-const bridge = await new IframePostmessage({
+const connection = await new IframePostmessage({
   url: 'https://example.com/child.html',
   model: {
     updateParentState: (newState: any) => {
