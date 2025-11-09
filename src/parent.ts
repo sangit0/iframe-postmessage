@@ -54,8 +54,8 @@ class ParentAPIImplementation {
             return;
         }
 
-        const isFromOurChild = e.source === this.child || e.source === this.frame.contentWindow;
-        if (!isFromOurChild) {
+        const isFromChild = e.source === this.child || e.source === this.frame.contentWindow;
+        if (!isFromChild) {
             return;
         }
 
@@ -80,8 +80,8 @@ class ParentAPIImplementation {
                     return;
                 }
 
-                const isFromOurChild = e.source === this.child || e.source === this.frame.contentWindow;
-                if (!isFromOurChild) {
+                const isFromChild = e.source === this.child || e.source === this.frame.contentWindow;
+                if (!isFromChild) {
                     return;
                 }
 
@@ -203,12 +203,12 @@ class BridgeParent {
                     return;
                 }
 
-                const isFromOurChild = e.source === this.child || e.source === this.frame.contentWindow;
+                const isFromChild = e.source === this.child || e.source === this.frame.contentWindow;
 
                 const instanceInfo = getInstanceInfo(e);
                 const isFromRegisteredChild = instanceInfo && instanceInfo.childOrigin === this.childOrigin;
 
-                if (!isFromOurChild && !isFromRegisteredChild) {
+                if (!isFromChild && !isFromRegisteredChild) {
                     return;
                 }
 
