@@ -1,7 +1,9 @@
 src/
+__tests__/
 *.ts
 *.tsbuildinfo
 tsconfig.json
+jest.config.js
 .gitignore
 .env
 .env.local
@@ -9,4 +11,6 @@ coverage/
 .nyc_output/
 *.log
 .DS_Store
+node_modules/
+package-lock.json
 

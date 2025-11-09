@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A robust cross-frame communication library for secure parent-child iframe messaging with enhanced multi-iframe support",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
@@ -10,7 +11,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node scripts/fix-imports.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -32,12 +33,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/sangit0/iframe-postmessage.git"
   },
   "bugs": {
-    "url": ""
+    "url": "https://github.com/sangit0/iframe-postmessage/issues"
   },
-  "homepage": "",
+  "homepage": "https://github.com/sangit0/iframe-postmessage#readme",
   "devDependencies": {
     "@types/jest": "^29.5.0",
     "@types/node": "^20.0.0",
