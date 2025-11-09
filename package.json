@@ -1,5 +1,5 @@
 {
-  "name": "iframe-handshake-bridge",
+  "name": "iframe-postmessage",
   "version": "1.0.0",
   "description": "A robust cross-frame communication library for secure parent-child iframe messaging with enhanced multi-iframe support",
   "main": "dist/index.js",
